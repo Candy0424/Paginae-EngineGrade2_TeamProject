@@ -34,6 +34,10 @@ MonoBehaviour:
           isColorRecursive: 0
   bookmarks: []
   bookmarkedScenePaths:
-  - Assets/Work/CIW/00.Scene/CIW_Map Test.unity
+  - Assets/Work/CUH/00Scene/Ex_Level1.unity
+  - Assets/Work/CUH/00Scene/Ex_Level2.unity
+  - Assets/Work/CUH/00Scene/Ex_Level3.unity
+  - Assets/Work/PSB/00.Scenes/MapScene1.unity
+  - Assets/Work/PSB/00.Scenes/MapScene2.unity
   - Assets/Work/PSB/00.Scenes/MapScene4.unity
-  - Assets/Work/CUH/00Scene/BookScene.unity
+  - Assets/Work/PSB/00.Scenes/TutorialScene.unity
