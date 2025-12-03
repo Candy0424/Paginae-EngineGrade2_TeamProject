@@ -36,6 +36,9 @@ EditorBuildSettings:
     path: Assets/Work/CUH/00Scene/Ex_Level3.unity
     guid: 72716b81980bb374b9cfb6a8c677ae9d
   - enabled: 1
+    path: Assets/Work/CUH/00Scene/PlusLevel1.unity
+    guid: 282cf91048132b34cbc3d589eb3c1e30
+  - enabled: 1
     path: Assets/Work/PSB/00.Scenes/Ending.unity
     guid: fd8047354e06f8c459741784528ee164
   m_configObjects:
