@@ -23,8 +23,8 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 0.55
   smoothness:
-    m_OverrideState: 0
-    m_Value: 0.2
+    m_OverrideState: 1
+    m_Value: 0.495
   rounded:
     m_OverrideState: 0
     m_Value: 0
@@ -58,11 +58,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   active: 1
   shadows:
-    m_OverrideState: 0
-    m_Value: {r: 0.22012573, g: 0.22012573, b: 0.22012573, a: 1}
+    m_OverrideState: 1
+    m_Value: {r: 0.9030979, g: 0.93962264, b: 0.8704806, a: 1}
   highlights:
     m_OverrideState: 1
-    m_Value: {r: 1, g: 0.8836903, b: 0.49371064, a: 1}
+    m_Value: {r: 0.45427305, g: 0.5396226, b: 0.3940263, a: 1}
   balance:
     m_OverrideState: 0
     m_Value: 0

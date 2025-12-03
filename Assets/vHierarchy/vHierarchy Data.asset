@@ -17,6 +17,7 @@ MonoBehaviour:
     - 9d6446c2f49b9df42b44d5ad4eb05315
     - 208253d1f4d656e458fd1616789581d3
     - 29892817cf0bf9d4fbefbd7267aa038a
+    - 7b5fa1626f19ff54cb1c37eb38bbc0ad
     values:
     - goDatas_byGlobalId:
         keys: []
@@ -32,8 +33,15 @@ MonoBehaviour:
           iconNameOrGuid: 
           isIconRecursive: 0
           isColorRecursive: 0
+    - goDatas_byGlobalId:
+        keys: []
+        values: []
   bookmarks: []
   bookmarkedScenePaths:
-  - Assets/Work/CIW/00.Scene/CIW_Map Test.unity
+  - Assets/Work/CUH/00Scene/Ex_Level1.unity
+  - Assets/Work/CUH/00Scene/Ex_Level2.unity
+  - Assets/Work/CUH/00Scene/Ex_Level3.unity
+  - Assets/Work/PSB/00.Scenes/MapScene1.unity
+  - Assets/Work/PSB/00.Scenes/MapScene2.unity
   - Assets/Work/PSB/00.Scenes/MapScene4.unity
-  - Assets/Work/CUH/00Scene/BookScene.unity
+  - Assets/Work/PSB/00.Scenes/TutorialScene.unity

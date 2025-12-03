@@ -21,6 +21,9 @@ EditorBuildSettings:
     path: Assets/Work/PSB/00.Scenes/MapScene2.unity
     guid: 2fab99fdb459c0049939112946c12f5d
   - enabled: 1
+    path: Assets/Work/PSB/00.Scenes/MapScene3.unity
+    guid: 7b5fa1626f19ff54cb1c37eb38bbc0ad
+  - enabled: 1
     path: Assets/Work/PSB/00.Scenes/MapScene4.unity
     guid: 5dc380aa5e0dd5e43a20c200531e5dba
   - enabled: 1
