@@ -15,7 +15,7 @@ MonoBehaviour:
   level: 2
   stageImg: {fileID: 21300000, guid: ed28cc633054ac04e832047c3c044791, type: 3}
   stageName: "\uB370\uBBF8\uC548"
-  description: "\uB2F9\uC2E0\uC758 \uB0B4\uBA74\uACFC \uAC19\uC740 \uC0C9\uC744 \uCC3E\uC73C\uC138\uC694."
+  description: "\uB208\uC744 \uAC10\uC544 \uC2F1\uD074\uB808\uC5B4"
   firstStd: "\uC2A4\uD14C\uC774\uC9C0 \uD074\uB9AC\uC5B4"
   secondStd: "\uB0A8\uC740 \uC789\uD06C 5 \uC774\uC0C1"
   thirdStd: "\uB0A8\uC740 \uC789\uD06C 10 \uC774\uC0C1"

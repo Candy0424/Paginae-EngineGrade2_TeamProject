@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   level: 3
   stageImg: {fileID: 21300000, guid: d4f360a5f35f95e45b14bb94421b7e95, type: 3}
-  stageName: "\uCC45, \uC789\uD06C, \uD134"
-  description: "\uBE14\uB85D\uC744 \uC774\uB3D9\uC2DC\uD0AC \uB550, \uD56D\uC0C1
-    \uC5EC\uC720 \uACF5\uAC04\uC744 \uB0A8\uACA8\uB450\uC138\uC694."
+  stageName: "\uB178\uC778\uACFC \uBC14\uB2E4"
+  description: "\uC778\uAC04\uC740 \uD30C\uAD34\uB420\uC9C0\uC5B8\uC815 \uD328\uBC30\uD558\uC9C4
+    \uC54A\uB294\uB2E4."
   firstStd: "\uC2A4\uD14C\uC774\uC9C0 \uD074\uB9AC\uC5B4"
   secondStd: "\uB0A8\uC740 \uC789\uD06C 11 \uC774\uC0C1"
   thirdStd: "\uB0A8\uC740 \uC789\uD06C 16 \uC774\uC0C1"
