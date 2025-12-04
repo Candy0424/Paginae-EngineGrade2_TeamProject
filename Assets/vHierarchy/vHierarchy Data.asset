@@ -38,10 +38,12 @@ MonoBehaviour:
         values: []
   bookmarks: []
   bookmarkedScenePaths:
+  - Assets/Work/PSB/00.Scenes/TutorialScene.unity
+  - Assets/Work/PSB/00.Scenes/MapScene1.unity
+  - Assets/Work/PSB/00.Scenes/MapScene2.unity
+  - Assets/Work/PSB/00.Scenes/MapScene3.unity
+  - Assets/Work/PSB/00.Scenes/MapScene4.unity
   - Assets/Work/CUH/00Scene/Ex_Level1.unity
   - Assets/Work/CUH/00Scene/Ex_Level2.unity
   - Assets/Work/CUH/00Scene/Ex_Level3.unity
-  - Assets/Work/PSB/00.Scenes/MapScene1.unity
-  - Assets/Work/PSB/00.Scenes/MapScene2.unity
-  - Assets/Work/PSB/00.Scenes/MapScene4.unity
-  - Assets/Work/PSB/00.Scenes/TutorialScene.unity
+  - Assets/Work/CUH/00Scene/PlusLevel1.unity
