@@ -29,7 +29,7 @@ namespace Work.CIW.Code.Player
 
         [SerializeField] private TurnConsumeCommand turnConsumeCommand;
 
-        private PSBTestPlayerMovement _movementCompo;
+        PlayerMovement _movementCompo;
 
         [Header("FSM settings")]
         [SerializeField] StateDataSO[] states;
@@ -62,7 +62,7 @@ namespace Work.CIW.Code.Player
 
         private void Awake()
         {
-            PSBTestPlayerMovement movement = GetComponent<PSBTestPlayerMovement>();
+            PlayerMovement movement = GetComponent<PlayerMovement>();
             _movementCompo = movement;
 
             if (_movementCompo == null || !(_movementCompo is IMoveableTest))

@@ -44,7 +44,7 @@ namespace Work.CIW.Code.Player
         [Header("Camera Transition")]
         [SerializeField] FloorTransitionManager floorTransitionManager;
 
-        PSBTestPlayerCode _playerCode;
+        Player _playerCode;
 
         private bool _isMoving = false;
         bool _hasArrived = false;
@@ -83,7 +83,7 @@ namespace Work.CIW.Code.Player
             }
 
             _gridObject = GetComponent<GridObjectBase>();
-            _playerCode = GetComponent<PSBTestPlayerCode>();
+            _playerCode = GetComponent<Player>();
             if (_gridObject == null || _playerCode == null)
             {
                 enabled = false;
