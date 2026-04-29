@@ -1,9 +1,18 @@
-﻿using System.Collections;
+﻿using Ami.BroAudio;
+using Chuh007Lib.Dependencies;
+using Chuh007Lib.ObjectPool.Runtime;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using Work.CIW.Code.Camera;
+using Work.CIW.Code.Camera.Events;
 using Work.CIW.Code.Grid;
+using Work.CUH.Chuh007Lib.EventBus;
 using Work.CUH.Code.Commands;
+using Work.CUH.Code.GameEvents;
 using Work.CUH.Code.Test;
+using Work.ISC.Code.Effects;
+using Work.PSB.Code.Player;
 
 namespace Work.CIW.Code.Player
 {
@@ -28,20 +37,33 @@ namespace Work.CIW.Code.Player
     public class PlayerMovement : MonoBehaviour, ICommandable, IMovement, IMoveableTest
     {
         [Header("Dependencies - DIP")]
-        [SerializeField] MonoBehaviour gridServiceMono;
-        IGridDataService _gridService;
-        GridObjectBase _gridObject;
+        [SerializeField] private MonoBehaviour gridServiceMono;
+        public IGridDataService gridService;
+        private GridObjectBase _gridObject;
 
-        bool _isMoving = false;
+        [Header("Camera Transition")]
+        [SerializeField] FloorTransitionManager floorTransitionManager;
+
+        PSBTestPlayerCode _playerCode;
+
+        private bool _isMoving = false;
         bool _hasArrived = false;
 
         [Header("Movement")]
-        [SerializeField] float moveTime = 0.15f;
+        [SerializeField] private float moveTime = 0.15f;
 
         [Header("Stair Collision Setting")]
-        [SerializeField] LayerMask whatIsStair;
+        [SerializeField] private LayerMask whatIsStair;
+        [SerializeField] private LayerMask whatIsArrival;
 
-        [SerializeField] LayerMask whatIsArrival;
+        [Header("Object Pooling")]
+        [SerializeField] PoolingItemSO moveEffect;
+
+        [Header("Sound Setting")]
+        [SerializeField] private SoundID moveSound;
+        [SerializeField] private SoundID deathSound;
+
+        [Inject] PoolManagerMono _poolManager;
 
         public bool isMoving
         {
@@ -49,24 +71,21 @@ namespace Work.CIW.Code.Player
             set => _isMoving = value;
         }
 
-        Player _player;
-
         protected void Awake()
         {
             if (gridServiceMono is IGridDataService service)
             {
-                _gridService = service;
+                gridService = service;
             }
             else
             {
-                Debug.LogError("IGridDataService dependency not met. Assign GridSystem component to 'gridServiceMono'.");
                 enabled = false;
             }
 
             _gridObject = GetComponent<GridObjectBase>();
-            if (_gridObject == null)
+            _playerCode = GetComponent<PSBTestPlayerCode>();
+            if (_gridObject == null || _playerCode == null)
             {
-                Debug.LogError("Player object must inherit from GridObjectBase.");
                 enabled = false;
             }
         }
@@ -77,7 +96,7 @@ namespace Work.CIW.Code.Player
             Vector3Int initGridPos = new Vector3Int(Mathf.RoundToInt(curWorldPos.x), Mathf.RoundToInt(curWorldPos.y), Mathf.RoundToInt(curWorldPos.z));
 
             _gridObject.CurrentGridPosition = initGridPos;
-            _gridService.SetObjectInitialPosition(_gridObject, initGridPos);
+            gridService.SetObjectInitialPosition(_gridObject, initGridPos);
             _gridObject.OnCellOccupied(initGridPos);
 
             transform.position = new Vector3(initGridPos.x, initGridPos.y, initGridPos.z);
@@ -85,12 +104,22 @@ namespace Work.CIW.Code.Player
 
         #region Player Movement
 
-        // 입력 처리는 Player에서 해주니, 더 이상 필요 없다.
         public void HandleInput(Vector2 input)
         {
+            if (_isMoving) return;
             if (_hasArrived) return;
 
-            StartMoveLogic(input);
+            Vector3Int dir = GetDirection(input);
+            if (dir == Vector3Int.zero) return;
+
+            if (CheckForStairs(dir)) return;
+
+            Vector3Int curPos = _gridObject.CurrentGridPosition;
+            if (gridService.CanMoveTo(curPos, dir, out Vector3Int targetPos))
+            {
+                StartMoveLogic(input);
+                gridService.UpdateObjectPosition(_gridObject, _gridObject.CurrentGridPosition, targetPos);
+            }
         }
 
         private Vector3Int GetDirection(Vector2 input)
@@ -100,19 +129,20 @@ namespace Work.CIW.Code.Player
 
             if (input.x > 0.5f) return Vector3Int.right;
             if (input.x < -0.5f) return Vector3Int.left;
-            
+
             return Vector3Int.zero;
         }
 
         private IEnumerator MoveRoutine(Vector3Int targetPos)
         {
-            Player player = GetComponent<Player>();
-            if (player != null)
+            if (_playerCode != null)
             {
-                player.ChangeState("MOVE");
+                _playerCode.SetInputLockState(true);
+                _playerCode.ChangeState("MOVE");
             }
 
             _isMoving = true;
+            CreateEffect();
             Vector3Int oldPos = _gridObject.CurrentGridPosition;
 
             float startWorldY = oldPos.y;
@@ -131,17 +161,22 @@ namespace Work.CIW.Code.Player
                 yield return null;
             }
 
-            // 애니메이션 종료 후 최종 위치 확정
             transform.position = finalWorldPos;
-
-            // GridSystem에 오프셋이 없는 순수한 Grid 좌표(targetPos)를 전달
-            _gridService.UpdateObjectPosition(_gridObject, oldPos, targetPos);
 
             _isMoving = false;
 
-            if (player != null)
+            if (_playerCode != null)
             {
-                player.ChangeState("IDLE");
+                _playerCode.SetInputLockState(false);
+                _playerCode.ChangeState("IDLE");
+
+                if (!_playerCode.IsDead)
+                {
+                    if (_playerCode.turnAdapter != null && !_playerCode.turnAdapter.HasTurnRemaining)
+                    {
+                        _playerCode.HandleTurnZero();
+                    }
+                }
             }
         }
 
@@ -160,10 +195,9 @@ namespace Work.CIW.Code.Player
             if (_hasArrived) return false;
             if (_isMoving) return false;
 
-            if (CheckForArrival(direction)) return true;
             if (CheckForStairs(direction)) return true;
 
-            if (_gridService.CanMoveTo(_gridObject.CurrentGridPosition, direction, out Vector3Int targetPos))
+            if (gridService.CanMoveTo(_gridObject.CurrentGridPosition, direction, out Vector3Int targetPos))
             {
                 Vector3 worldDirection = new Vector3(direction.x, 0, direction.z);
 
@@ -180,6 +214,15 @@ namespace Work.CIW.Code.Player
             return false;
         }
 
+        public async void CreateEffect()
+        {
+            PoolingEffect effect = _poolManager.Pop<PoolingEffect>(moveEffect);
+            effect.PlayVFX(transform.position + new Vector3(0f, 0.1f, 0f));
+            BroAudio.Play(moveSound);
+            await Awaitable.WaitForSecondsAsync(2f);
+            _poolManager.Push(effect);
+        }
+
         #endregion
 
         #region Check Stairs
@@ -194,13 +237,12 @@ namespace Work.CIW.Code.Player
 
             if (hits.Length > 0)
             {
-                Debug.Log("Stair 감지");
-
                 if (hits[0].TryGetComponent(out StairTrigger stair))
                 {
                     Vector3Int teleportPos = new Vector3Int(_gridObject.CurrentGridPosition.x, stair.GetTargetY(), _gridObject.CurrentGridPosition.z);
 
-                    TeleportToFloor(teleportPos, dir);
+                    Bus<CommandEvent>.Raise(new CommandEvent(new StairCommand(
+                        this, _gridObject.CurrentGridPosition, teleportPos, dir)));
 
                     return true;
                 }
@@ -209,16 +251,17 @@ namespace Work.CIW.Code.Player
             return false;
         }
 
-        private void TeleportToFloor(Vector3Int targetPos, Vector3Int dir)
+        public void TeleportToFloor(Vector3Int targetPos, Vector3Int dir)
         {
             Vector3Int oldPos = _gridObject.CurrentGridPosition;
-            _gridService.UpdateObjectPosition(_gridObject, oldPos, targetPos);
+
+            Bus<FloorEvent>.Raise(new FloorEvent(targetPos.y > oldPos.y ? 1 : -1));
+
+            gridService.UpdateObjectPosition(_gridObject, oldPos, targetPos);
 
             float targetWorldY = targetPos.y;
             Vector3 finalWorldPos = new Vector3(targetPos.x, targetWorldY, targetPos.z);
             transform.position = finalWorldPos;
-
-            Debug.Log($"텔포 시킴. 현재 위치는 {_gridObject.CurrentGridPosition}");
 
             Vector3Int effectiveDir = dir;
             if (dir.y < 0)
@@ -227,46 +270,21 @@ namespace Work.CIW.Code.Player
                 effectiveDir.z *= -1;
             }
 
-
-            if (_gridService.CanMoveTo(targetPos, effectiveDir, out Vector3Int finalMovePos))
+            if (gridService.CanMoveTo(targetPos, effectiveDir, out Vector3Int finalMovePos))
             {
-                _gridService.UpdateObjectPosition(_gridObject, targetPos, finalMovePos);
-                    
+                gridService.UpdateObjectPosition(_gridObject, targetPos, finalMovePos);
+
                 float finalWorldY = finalMovePos.y;
                 Vector3 finalFinalWorldPos = new Vector3(finalMovePos.x, finalWorldY, finalMovePos.z);
                 transform.position = finalFinalWorldPos;
-
-                Debug.Log($"텔포 후 강제 이동. 최종 위치는 {_gridObject.CurrentGridPosition}");
             }
-            else
-            {
-                Debug.LogWarning("텔레포트 후 강제 이동 실패. 다음 칸이 막혀있거나 경계 밖. 계단에 남아있을 수 있습니다.");
-            }
-        }
-
-        private bool CheckForArrival(Vector3Int dir)
-        {
-            Vector3Int targetGridPos = _gridObject.CurrentGridPosition + dir;
-            Vector3 rayOrigin = new Vector3(targetGridPos.x, targetGridPos.y + 5f, targetGridPos.z);
-            Vector3 rayDirection = Vector3.down;
-
-            float maxDistance = 6f;
-
-            if (Physics.Raycast(rayOrigin, rayDirection, out RaycastHit hit, maxDistance, whatIsArrival))
-            {
-                if (hit.collider.GetComponent<ArrivalTrigger>() != null)
-                {
-                    Debug.Log("도착했습니다!");
-
-                    _hasArrived = true;
-                    StartCoroutine(MoveRoutine(targetGridPos));
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         #endregion
+
+        public void PlayDeathSound()
+        {
+            BroAudio.Play(deathSound);
+        }
     }
 }
