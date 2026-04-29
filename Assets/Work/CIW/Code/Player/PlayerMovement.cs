@@ -11,13 +11,8 @@ namespace Work.CIW.Code.Player
 
     public interface IGridDataService
     {
-        // Grid System???대룞 媛?μ쓣 遺?ы븿
         bool CanMoveTo(Vector3Int curPos, Vector3Int dir, out Vector3Int targetPos);
-
-        // ?대룞 ?꾨즺 ??Grid System???곗씠?곕? 媛깆떊?댁쨲
         void UpdateObjectPosition(GridObjectBase movingObj, Vector3Int oldPos, Vector3Int newPos);
-
-        // Grid System???뱀젙 Grid Object???꾩튂瑜?珥덇린???좊븣 ?ъ슜
         void SetObjectInitialPosition(GridObjectBase obj, Vector3Int initPos);
     }
 
@@ -39,13 +34,11 @@ namespace Work.CIW.Code.Player
 
         bool _isMoving = false;
         bool _hasArrived = false;
-        //bool _isChangingFloor = false;
 
         [Header("Movement")]
         [SerializeField] float moveTime = 0.15f;
 
         [Header("Stair Collision Setting")]
-        //[SerializeField] float stairChkDistance = 1.01f;
         [SerializeField] LayerMask whatIsStair;
 
         [SerializeField] LayerMask whatIsArrival;
@@ -57,11 +50,6 @@ namespace Work.CIW.Code.Player
         }
 
         Player _player;
-
-        //public Vector3Int CurrentGridPosition { get; private set; }
-        //public GameObject GetGameObject() => gameObject;
-
-        //[SerializeField] UnityEvent onMoveComplete;
 
         protected void Awake()
         {
@@ -93,14 +81,6 @@ namespace Work.CIW.Code.Player
             _gridObject.OnCellOccupied(initGridPos);
 
             transform.position = new Vector3(initGridPos.x, initGridPos.y, initGridPos.z);
-
-            //Vector3Int initWorldPos = Vector3Int.RoundToInt(transform.position);
-
-            //Vector3Int initGridPos = initWorldPos;
-            //initGridPos.y = initGridPos.y - 1;
-
-            //_gridService.SetObjectInitialPosition(_gridObject, initGridPos);
-            //_gridObject.OnCellOccupied(initGridPos);
         }
 
         #region Player Movement
@@ -109,21 +89,8 @@ namespace Work.CIW.Code.Player
         public void HandleInput(Vector2 input)
         {
             if (_hasArrived) return;
-            //if (_isChangingFloor) return;
 
             StartMoveLogic(input);
-
-            //if (_isMoving) return;
-
-            //Vector3Int dir = GetDirection(input);
-            //if (dir == Vector3Int.zero) return;
-
-            //if (CheckForStairs(dir)) return;
-
-            //if (_gridService.CanMoveTo(_gridObject.CurrentGridPosition, dir, out Vector3Int targetPos))
-            //{
-            //    StartCoroutine(MoveRoutine(targetPos));
-            //}
         }
 
         private Vector3Int GetDirection(Vector2 input)
@@ -169,11 +136,6 @@ namespace Work.CIW.Code.Player
 
             // GridSystem에 오프셋이 없는 순수한 Grid 좌표(targetPos)를 전달
             _gridService.UpdateObjectPosition(_gridObject, oldPos, targetPos);
-            //if (transform.position.y != targetPos.y)
-            //{
-            //    transform.position = new Vector3(finalWorldPos.x, targetPos.y, finalWorldPos.z);
-            //    Debug.LogWarning($"[Y CORRECTION] GridObjectBase overrode Y position. Reverted to Y={targetPos.y}.");
-            //}
 
             _isMoving = false;
 

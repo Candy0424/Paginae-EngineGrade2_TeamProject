@@ -6,7 +6,7 @@ using Work.CIW.Code.Player;
 namespace Work.CIW.Code.Grid
 {
     /// <summary>
-    /// ���� ���� �����͸� �����ϴ� �߾� �ý���
+    /// 그리드 공간 데이터를 관리하는 중앙 시스템
     /// </summary>
     public class GridSystem : MonoBehaviour, IGridDataService
     {
@@ -16,7 +16,7 @@ namespace Work.CIW.Code.Grid
         [SerializeField] GridCell cellPrefab;
         [SerializeField] private Vector3Int gridCenter = new Vector3Int(0, 0, 0);
         [SerializeField] Vector3Int gridSize = new Vector3Int(10, 10, 10);
-        [SerializeField] List<Transform> gridParent; // ���� Cell���� ��ġ�� �θ� ������Ʈ
+        [SerializeField] List<Transform> gridParent; // 생성될 Cell들이 배치될 부모 오브젝트
         [SerializeField] GameObject cellObjPrefab;
         [SerializeField] Vector3 gridStartWorldPosition = Vector3.zero;
         float _cellSize = 1f;
@@ -64,7 +64,7 @@ namespace Work.CIW.Code.Grid
             gridStartWorldPosition = Vector3.zero;
         }
 
-        // �� �ʱ�ȭ -> �� gridCell���� 3���� ������ ��ġ
+        // Cell 프리팹의 크기를 기반으로 Grid의 셀 크기 계산
         private void InitializeGrid()
         {
             _gridMap = new Dictionary<Vector3Int, GridCell>();
@@ -111,8 +111,6 @@ namespace Work.CIW.Code.Grid
             
         }
 
-        #region I Grid Data Service ����
-
         public bool CanMoveTo(Vector3Int curPos, Vector3Int dir, out Vector3Int targetPos)
         {
             targetPos = curPos + dir;
@@ -134,7 +132,6 @@ namespace Work.CIW.Code.Grid
             Vector3 rayDir = Vector3.down;
             float maxDistance = targetPos.y + 6f;
 
-            // ���� ĭ���� �̵����� �� ���� ��� ������ �ִ°�?
             if (Physics.Raycast(rayOrigin, rayDir, out RaycastHit hit, maxDistance, whatIsWalkable))
             {
                 if (Mathf.Abs(hit.point.y - targetPos.y) < 0.1f)
@@ -196,7 +193,5 @@ namespace Work.CIW.Code.Grid
             _gridMap.TryGetValue(pos, out GridCell cell);
             return cell;
         }
-
-        #endregion
     }
 }
